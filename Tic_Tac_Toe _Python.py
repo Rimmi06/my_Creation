@@ -67,12 +67,15 @@ class tac_Board():
                             return True
         
 
-    def is_tie(self):
+    def is_tie(self, mylist =[]):
         used_cells = 0
         for cell in self.cells:
             if cell != " ":
                 used_cells +=1
+        #special case for last cell
         if used_cells == 9:
+            if self.is_winner1(mylist):
+                return False
             return True
         else:
             return False
@@ -81,13 +84,13 @@ class tac_Board():
         self.cells = [" "," "," "," "," "," "," "," "," "," "]
       
     def check_for_win(self,board,player):
-       for wc in self.win_combo:
-            result = True
-                if board[wc] != player:
-                    return False
-            if result == True:
-               return True
-       return False
+           result = True
+           for cell_no in self.win_combo:
+               for i in cell_no:
+                   if board[i] != player:
+                       return False
+               if result == True:
+                   return True
 
     def is_Space_Free(self):
         for i in range(1,10):
@@ -153,98 +156,99 @@ def play_again():
 Players ={'C': 'Computer',
           'H': 'Player 2' 
     }                   
+if __name__ == '__main__':
+    #choose user input
+    Player_1= input("\nPlease choose O or X)")
+    if Player_1 == 'O' or Player_1 == 'X':
+        print("You chose {0}".format(Player_1))
+    else:
+        Player_1 = input("\nPlease from choose 0 or X)")
 
-#choose user input
-Player_1= input("\nPlease choose O or X)")
-if Player_1 == 'O' or Player_1 == 'X':
-    print("You chose {0}".format(Player_1))
-else:
-    Player_1 = input("\nPlease from choose 0 or X)")
+    if Player_1 == "X":
+                Player_2 = "0"
+    else:
+                Player_2 = "X"
+    #select other user
+    ai_human = input('\nWhom you want to play against?\n Choose "C" to play against Computer or "H" against human ').upper()
+    while not (ai_human == 'C' or ai_human == 'H'):
+       print('Do you want to play with Computer "C" or Human "H"?\n')
+       ai_human = input().upper()
 
-if Player_1 == "X":
-            Player_2 = "0"
-else:
-            Player_2 = "X"
-#select other user
-ai_human = input('\nWhom you want to play against?\n Choose "C" to play against Computer or "H" against human ').upper()
-while not (ai_human == 'C' or ai_human == 'H'):
-   print('Do you want to play with Computer "C" or Human "H"?\n')
-   ai_human = input().upper()
+    print("You Playing with "+ Players[ai_human]+"\nGood Luck!\n")
 
-print("You Playing with "+ Players[ai_human]+"\nGood Luck!\n")
+    #list to store moves
+    list1 = []
+    list2 = []
+    while True: 
 
-#list to store moves
-list1 = []
-list2 = []
-while True: 
+        #refresh_screen()
+        player_first = obj_board.who_plays_first()
+        game_is_playing = True
+        while game_is_playing:
+            if player_first =='You':
 
-    #refresh_screen()
-    player_first = obj_board.who_plays_first()
-    game_is_playing = True
-    while game_is_playing:
-        if player_first =='You':
+                #set user input
+                X_choice = int(input("\n Please choose cell no 1-9.> "))
+                list1.append(X_choice)
 
-            #set user input
-            X_choice = int(input("\n Please choose cell no 1-9.> "))
-            list1.append(X_choice)
-
-            #update board
-            obj_board.update_board(X_choice,Player_1)
-     
-            refresh_screen()            
-            #Check for Winner
-            if obj_board.is_winner1(list1):
-                    print("Congratulations! You are winner \n")
-                    list1=[]
-                    game_is_playing = False
-                    play_again()
-            #Check for Tie
-            elif obj_board.is_tie():
-                    print("This ends to a Tie game! \n")
-                    game_is_playing = False
-                    play_again()
-            else:
-                    player_first = 'Other'
-
-        #set user input
-        else:
-            if ai_human == "H":
-                  o_choice = int(input("Please choose cell no 1-9.>"))
-                  list2.append(o_choice)
-
-                  #update board
-                  obj_board.update_board(o_choice,Player_2)
-                  refresh_screen()
-                  if obj_board.is_winner1(list2):
-                            print("Congratulations! ", Players[ai_human]+" is winner \n")
-                            list2 = []
-                            game_is_playing = False
-                            play_again()
-                  #Check for Tie
-                  elif obj_board.is_tie():
-                            print("This ends to a Tie game! \n")
-                            game_is_playing = False
-                            play_again()
-                  else:
-                            player_first = 'You'
-            else:
-                    Board_copy = obj_board.get_Board_Copy()
-                    o_choice = obj_board.ai_move(Player_2,Board_copy)
-                    list2.append(o_choice)
-                    refresh_screen()    
-
-                    #Check for Winner
-                    if obj_board.is_winner1(list2):
-                        print( Players[ai_human] +" is winner \n")
-                        list2 = []
+                #update board
+                obj_board.update_board(X_choice,Player_1)
+         
+                refresh_screen()            
+                #Check for Winner
+                if obj_board.is_winner1(list1):
+                        print("Congratulations! You are winner \n")
+                        list1=[]
                         game_is_playing = False
                         play_again()
-
-                    #Check for Tie
-                    elif obj_board.is_tie():
+                #Check for Tie
+                elif obj_board.is_tie(list1):
                         print("This ends to a Tie game! \n")
                         game_is_playing = False
                         play_again()
-                    else:
-                        player_first ='You'
+                else:
+                        player_first = 'Other'
+
+            #set user input
+            else:
+                if ai_human == "H":
+                      o_choice = int(input("Please choose cell no 1-9.>"))
+                      list2.append(o_choice)
+
+                      #update board
+                      obj_board.update_board(o_choice,Player_2)
+                      refresh_screen()
+                      if obj_board.is_winner1(list2):
+                                print("Congratulations! ", Players[ai_human]+" is winner \n")
+                                list2 = []
+                                game_is_playing = False
+                                play_again()
+                      #Check for Tie
+                      elif obj_board.is_tie(list2):
+                                print("This ends to a Tie game! \n")
+                                game_is_playing = False
+                                play_again()
+                      else:
+                                player_first = 'You'
+                else:
+                        Board_copy = obj_board.get_Board_Copy()
+                        o_choice = obj_board.ai_move(Player_2,Board_copy)
+                        list2.append(o_choice)
+                        refresh_screen()    
+
+                        #Check for Winner
+                        if obj_board.is_winner1(list2):
+                            print( Players[ai_human] +" is winner \n")
+                            list2 = []
+                            game_is_playing = False
+                            play_again()
+
+                        #Check for Tie
+                        elif obj_board.is_tie(list2):
+                            print("This ends to a Tie game! \n")
+                            game_is_playing = False
+                            play_again()
+                        else:
+                            player_first ='You'
+
 
